@@ -1,0 +1,53 @@
+program Project1;
+
+{$APPTYPE CONSOLE}
+
+{$R *.res}
+
+uses
+  System.SysUtils;
+
+type
+  TObject2 = class;
+
+  TObject1 = class
+  private
+    FObject2: TObject2;
+  public
+    property Object2: TObject2 read FObject2 write FObject2;
+  end;
+
+  TObject2 = class
+  private
+    FObject1: TObject1;
+  public
+    property Object1: TObject1 read FObject1 write FObject1;
+  end;
+
+
+  procedure MethodWithLeak;
+  var
+    Object1: TObject1;
+    Object2: TObject2;
+  begin
+    Object1 := TObject1.Create;
+    try
+      Object2 := TObject2.Create;
+
+
+      Object1.Object2 := Object2;
+      Object2.Object1 := Object1;
+    finally
+      Object1.Free;
+      Object2.Free;
+    end;
+  end;
+
+begin
+  try
+    MethodWithLeak;
+  except
+    on E: Exception do
+      Writeln(E.ClassName, ': ', E.Message);
+  end;
+end.
